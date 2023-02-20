@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  dynamodb-local:
+    container_name: 'dynamodb-local'
+    image: 'amazon/dynamodb-local:latest'
+    command: '-Xms256m -Xmx4g -jar DynamoDBLocal.jar -sharedDb -dbPath /dynamodb_data'
+    volumes:
+      - ./dynamodb-local:/dynamodb_data
+    ports:
+      - '8000:8000'
+  sl-manager-nest-api:
+    container_name: 'sl-manager-nest-api'
+    build: '../sl-manager-nest-api/'
+    volumes:
+      - ../sl-manager-nest-api/.build:/sl-manager-nest-api/.build
+      - ../sl-manager-nest-api/src:/sl-manager-nest-api/src
+      - ../sl-manager-nest-api/test:/sl-manager-nest-api/test
+    command: npm run start:dev
+    ports:
+      - '5002:5002'
+      - '5011:5011'
+    restart: unless-stopped
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+networks:
+  default:
+    name: sl-manager-local_default
