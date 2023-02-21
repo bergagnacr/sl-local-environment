@@ -8,18 +8,19 @@ services:
       - ./dynamodb-local:/dynamodb_data
     ports:
       - '8000:8000'
-  sl-manager-nest-api:
-    container_name: 'sl-manager-nest-api'
+  sl-manager-api:
+    container_name: 'sl-manager-api'
     build: '../sl-manager-nest-api/'
     volumes:
-      - ../sl-manager-nest-api/.build:/sl-manager-nest-api/.build
-      - ../sl-manager-nest-api/src:/sl-manager-nest-api/src
-      - ../sl-manager-nest-api/test:/sl-manager-nest-api/test
-    command: npm run deploy:local
+      - ../sl-manager-nest-api/.build:/sl-manager-api/.build
+      - ../sl-manager-nest-api/src:/sl-manager-api/src
+      - ../sl-manager-nest-api/test:/sl-manager-api/test
+      - ../sl-manager-nest-api/.env:/sl-manager-api/.env
+      - ../sl-manager-nest-api/serverless.yml:/sl-manager-api/serverless.yml
+    command: sls offline start
     ports:
       - '5002:5002'
       - '5011:5011'
-    restart: unless-stopped
     extra_hosts:
       - 'host.docker.internal:host-gateway'
 networks:
