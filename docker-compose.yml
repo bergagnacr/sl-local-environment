@@ -1,13 +1,27 @@
 version: '3.8'
 services:
-  dynamodb-local:
-    container_name: 'dynamodb-local'
-    image: 'amazon/dynamodb-local:latest'
-    command: '-Xms256m -Xmx4g -jar DynamoDBLocal.jar -sharedDb -dbPath /dynamodb_data'
-    volumes:
-      - ./dynamodb-local:/dynamodb_data
+  sl-manager-db:
+    image: postgres:14.1-alpine
+    container_name: sl-manager-db
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     ports:
-      - '8000:8000'
+      - '54320:5432'
+    volumes:
+      - sl-manager-db:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - '5050:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
   sl-manager-api:
     container_name: 'sl-manager-api'
     build: '../sl-manager-nest-api/'
@@ -17,12 +31,14 @@ services:
       - ../sl-manager-nest-api/test:/sl-manager-api/test
       - ../sl-manager-nest-api/.env:/sl-manager-api/.env
       - ../sl-manager-nest-api/serverless.yml:/sl-manager-api/serverless.yml
-    command: sls offline start
+    command: npm run start:dev
     ports:
-      - '5002:5002'
-      - '5011:5011'
+      - '3000:3001'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
+volumes:
+  sl-manager-db:
+  pgadmin-data:
 networks:
   default:
     name: sl-manager-local_default
