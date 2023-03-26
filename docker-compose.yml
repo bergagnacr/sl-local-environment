@@ -13,6 +13,8 @@ services:
       - sl-manager-db:/var/lib/postgresql/data
   pgadmin:
     image: dpage/pgadmin4
+    logging:
+      driver: none
     container_name: pgadmin4_container
     restart: always
     ports:
@@ -22,21 +24,21 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     volumes:
       - pgadmin-data:/var/lib/pgadmin
-  sl-manager-api:
-    container_name: 'sl-manager-api'
-    build: '../sl-manager-nest-api/'
-    volumes:
-      # - ../sl-manager-nest-api/.build:/sl-manager-api/.build
-      - ../sl-manager-nest-api/src:/sl-manager-api/src
-      - ../sl-manager-nest-api/test:/sl-manager-api/test
-      - ../sl-manager-nest-api/.env:/sl-manager-api/.env
-      - ../sl-manager-nest-api/serverless.yml:/sl-manager-api/serverless.yml
-    command: sls offline start
-    ports:
-      - '5002:5002'
-      - '5011:5011'
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
+  # sl-manager-api:
+  #   container_name: 'sl-manager-api'
+  #   build: '../sl-manager-nest-api/'
+  #   volumes:
+  #     - ../sl-manager-nest-api/.build:/sl-manager-api/.build
+  #     - ../sl-manager-nest-api/src:/sl-manager-api/src
+  #     - ../sl-manager-nest-api/test:/sl-manager-api/test
+  #     - ../sl-manager-nest-api/.env:/sl-manager-api/.env
+  #     - ../sl-manager-nest-api/serverless.yml:/sl-manager-api/serverless.yml
+  #   command: sls offline start --prefix 'sl-manager-api' --noPrependStageInUrl
+  #   ports:
+  #     - '5002:5002'
+  #     - '5011:5011'
+  #   extra_hosts:
+  #     - 'host.docker.internal:host-gateway'
 volumes:
   sl-manager-db:
   pgadmin-data:
